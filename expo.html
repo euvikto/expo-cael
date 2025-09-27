@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz da Copa do Mundo - Desafio do Futebol</title>
+    <style>
+        :root {
+            --primary-gold: #D4AF37;
+            --light-gold: #F5E8B8;
+            --dark-gold: #B8860B;
+            --light-bg: #F8F9FA;
+            --white: #FFFFFF;
+            --text-dark: #333333;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--light-bg) 0%, var(--white) 100%);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px var(--shadow);
+            border-bottom: 3px solid var(--primary-gold);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-gold), var(--dark-gold), var(--primary-gold));
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+            text-shadow: 1px 1px 3px var(--shadow);
+        }
+        
+        h1 span {
+            color: var(--primary-gold);
+            text-shadow: 0 0 5px var(--light-gold);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--dark-gold);
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--light-gold);
+        }
+        
+        .tab {
+            padding: 1rem 2rem;
+            background: var(--white);
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+            color: var(--text-dark);
+        }
+        
+        .tab.active {
+            background: var(--primary-gold);
+            color: var(--white);
+            box-shadow: 0 -3px 10px var(--shadow);
+        }
+        
+        .tab-content {
+            display: none;
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 0 8px 8px 8px;
+            box-shadow: 0 4px 15px var(--shadow);
+            min-height: 500px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .welcome-screen, .quiz-screen, .results-screen, .ranking-screen {
+            text-align: center;
+        }
+        
+        .welcome-screen h2, .quiz-screen h2, .results-screen h2, .ranking-screen h2 {
+            margin-bottom: 1.5rem;
+            color: var(--dark-gold);
+            font-size: 2rem;
+        }
+        
+        .welcome-screen p {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            background: var(--primary-gold);
+            color: var(--white);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px var(--shadow);
+        }
+        
+        .btn:hover {
+            background: var(--dark-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px var(--shadow);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .question-container {
+            margin-bottom: 2rem;
+        }
+        
+        .question {
+            font-size: 1.4rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .option {
+            padding: 1rem;
+            background: var(--light-bg);
+            border: 2px solid var(--light-gold);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            background: var(--light-gold);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            background: var(--primary-gold);
+            color: var(--white);
+            border-color: var(--dark-gold);
+        }
+        
+        .quiz-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 0.5rem 1rem;
+            background: var(--light-bg);
+            border-radius: 50px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: var(--light-gold);
+            border-radius: 5px;
+            flex-grow: 1;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--primary-gold);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .results-screen .score {
+            font-size: 3rem;
+            color: var(--primary-gold);
+            margin: 1rem 0;
+            font-weight: bold;
+        }
+        
+        .trophy {
+            font-size: 4rem;
+            margin: 1rem 0;
+            color: var(--primary-gold);
+        }
+        
+        .ranking-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        
+        .ranking-table th {
+            background: var(--primary-gold);
+            color: var(--white);
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        .ranking-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--light-gold);
+        }
+        
+        .ranking-table tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+        
+        .ranking-table tr:hover {
+            background: var(--light-gold);
+        }
+        
+        .player-name {
+            font-weight: 600;
+        }
+        
+        .player-score {
+            color: var(--primary-gold);
+            font-weight: bold;
+        }
+        
+        .player-rank {
+            font-weight: bold;
+            width: 60px;
+            text-align: center;
+        }
+        
+        .player-rank-1 {
+            background: linear-gradient(135deg, var(--primary-gold) 0%, var(--light-gold) 100%);
+            color: var(--white);
+        }
+        
+        .player-rank-2 {
+            background: var(--light-gold);
+        }
+        
+        .player-rank-3 {
+            background: #f0f0f0;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--white);
+            border-top: 2px solid var(--light-gold);
+            margin-top: auto;
+        }
+        
+        /* Modal para inserção do nome */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        
+        .modal-content h3 {
+            color: var(--dark-gold);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .modal-content p {
+            margin-bottom: 1.5rem;
+            color: var(--text-dark);
+        }
+        
+        .name-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 2px solid var(--light-gold);
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.3s;
+        }
+        
+        .name-input:focus {
+            outline: none;
+            border-color: var(--primary-gold);
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .modal-btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn.confirm {
+            background: var(--primary-gold);
+            color: white;
+        }
+        
+        .modal-btn.confirm:hover {
+            background: var(--dark-gold);
+        }
+        
+        .modal-btn.cancel {
+            background: #f0f0f0;
+            color: var(--text-dark);
+        }
+        
+        .modal-btn.cancel:hover {
+            background: #e0e0e0;
+        }
+        
+        .error-message {
+            color: #d9534f;
+            font-size: 0.9rem;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-right: 0;
+                margin-bottom: 5px;
+                border-radius: 8px;
+            }
+            
+            .tab-content {
+                border-radius: 8px;
+            }
+            
+            .options {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .modal-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Quiz da <span>Copa do Mundo</span></h1>
+        <p class="subtitle">Teste seus conhecimentos sobre futebol</p>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="quiz">Quiz</button>
+            <button class="tab" data-tab="ranking">Ranking</button>
+        </div>
+        
+        <div id="quiz-tab" class="tab-content active">
+            <div class="welcome-screen">
+                <h2>Bem-vindo ao Desafio da Copa do Mundo!</h2>
+                <p>Este quiz vai testar seus conhecimentos sobre a história das Copas do Mundo, grandes jogadores, momentos marcantes e curiosidades do maior evento do futebol mundial.</p>
+                <p>Serão 15 perguntas desafiadoras. Boa sorte!</p>
+                <button id="start-quiz" class="btn">Iniciar Quiz</button>
+            </div>
+            
+            <div class="quiz-screen" style="display: none;">
+                <h2>Desafio da Copa do Mundo</h2>
+                <div class="quiz-progress">
+                    <span id="question-counter">Pergunta 1 de 15</span>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <span id="timer">Tempo: 60s</span>
+                </div>
+                
+                <div class="question-container">
+                    <div class="question" id="question-text">Qual foi o primeiro país a sediar uma Copa do Mundo?</div>
+                    <div class="options" id="options-container">
+                        <!-- Opções serão inseridas via JavaScript -->
+                    </div>
+                </div>
+                
+                <button id="next-question" class="btn" style="display: none;">Próxima Pergunta</button>
+                <button id="submit-quiz" class="btn" style="display: none;">Finalizar Quiz</button>
+            </div>
+            
+            <div class="results-screen" style="display: none;">
+                <h2>Resultado do Quiz</h2>
+                <div class="trophy">🏆</div>
+                <div class="score" id="final-score">0/15</div>
+                <p id="result-message">Parabéns! Você é um verdadeiro especialista em Copa do Mundo!</p>
+                <button id="restart-quiz" class="btn">Jogar Novamente</button>
+            </div>
+        </div>
+        
+        <div id="ranking-tab" class="tab-content">
+            <div class="ranking-screen">
+                <h2>Ranking dos Jogadores</h2>
+                <p>Confira como você se compara a outros especialistas em Copa do Mundo!</p>
+                
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Jogador</th>
+                            <th>Pontuação</th>
+                            <th>Data</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-body">
+                        <!-- Dados do ranking serão inseridos via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Quiz da Copa do Mundo &copy; 2025 - Desafie seus conhecimentos sobre futebol</p>
+    </footer>
+    
+    <!-- Modal para inserção do nome -->
+    <div id="name-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Identifique-se para o Ranking</h3>
+            <p>Digite seu nome para aparecer no ranking de jogadores:</p>
+            <input type="text" id="player-name-input" class="name-input" placeholder="">
+            <div id="name-error" class="error-message">Por favor, digite um nome válido.</div>
+            <div class="modal-buttons">
+                <button id="confirm-name" class="modal-btn confirm">Confirmar</button>
+                <button id="cancel-name" class="modal-btn cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Dados do quiz - perguntas e respostas
+        const quizQuestions = [
+            {
+                question: "Qual foi o primeiro país a sediar uma Copa do Mundo?",
+                options: ["Uruguai", "Brasil", "Itália", "França"],
+                correct: 0
+            },
+            {
+                question: "Qual jogador detém o recorde de mais gols em Copas do Mundo?",
+                options: ["Pelé", "Miroslav Klose", "Ronaldo", "Gerd Müller"],
+                correct: 1
+            },
+            {
+                question: "Em que ano a Copa do Mundo foi realizada pela primeira vez no continente africano?",
+                options: ["2006", "2010", "2014", "2018"],
+                correct: 1
+            },
+            {
+                question: "Qual seleção venceu a Copa do Mundo de 1998?",
+                options: ["Brasil", "Alemanha", "França", "Itália"],
+                correct: 2
+            },
+            {
+                question: "Quantas vezes a Itália venceu a Copa do Mundo?",
+                options: ["2", "3", "4", "5"],
+                correct: 2
+            },
+            {
+                question: "Qual foi o placar da final da Copa do Mundo de 1970 entre Brasil e Itália?",
+                options: ["3-1", "4-1", "4-2", "5-2"],
+                correct: 1
+            },
+            {
+                question: "Quem foi o artilheiro da Copa do Mundo de 2014?",
+                options: ["Thomas Müller", "Lionel Messi", "James Rodríguez", "Neymar"],
+                correct: 2
+            },
+            {
+                question: "Qual jogador recebeu o cartão vermelho mais rápido em uma final de Copa do Mundo?",
+                options: ["Zinedine Zidane", "Pedro Monzón", "Jens Lehmann", "John Heitinga"],
+                correct: 1
+            },
+            {
+                question: "Em que Copa do Mundo foi introduzida a regra do gol de ouro?",
+                options: ["1994", "1998", "2002", "2006"],
+                correct: 1
+            },
+            {
+                question: "Qual seleção foi a campeã da primeira Copa do Mundo?",
+                options: ["Uruguai", "Argentina", "Brasil", "Itália"],
+                correct: 0
+            },
+            {
+                question: "Quantos gols Pelé marcou em Copas do Mundo?",
+                options: ["10", "12", "14", "16"],
+                correct: 1
+            },
+            {
+                question: "Qual foi a única Copa do Mundo que não teve uma final?",
+                options: ["1930", "1934", "1950", "1974"],
+                correct: 2
+            },
+            {
+                question: "Quem foi o goleiro que mais vezes defendeu pênaltis em Copas do Mundo?",
+                options: ["Gianluigi Buffon", "Iker Casillas", "Manuel Neuer", "Jan Jongbloed"],
+                correct: 3
+            },
+            {
+                question: "Qual país sediou a Copa do Mundo de 2002 junto com o Japão?",
+                options: ["China", "Coreia do Sul", "Austrália", "Tailândia"],
+                correct: 1
+            },
+            {
+                question: "Qual jogador marcou o gol mais rápido em uma final de Copa do Mundo?",
+                options: ["Pele", "Johan Cruyff", "Paolo Rossi", "Johan Neeskens"],
+                correct: 3
+            }
+        ];
+        
+        // Elementos DOM
+        const startQuizBtn = document.getElementById('start-quiz');
+        const nextQuestionBtn = document.getElementById('next-question');
+        const submitQuizBtn = document.getElementById('submit-quiz');
+        const restartQuizBtn = document.getElementById('restart-quiz');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounter = document.getElementById('question-counter');
+        const progressBar = document.getElementById('progress-bar');
+        const timerElement = document.getElementById('timer');
+        const finalScore = document.getElementById('final-score');
+        const resultMessage = document.getElementById('result-message');
+        const welcomeScreen = document.querySelector('.welcome-screen');
+        const quizScreen = document.querySelector('.quiz-screen');
+        const resultsScreen = document.querySelector('.results-screen');
+        const rankingBody = document.getElementById('ranking-body');
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Elementos do modal de nome
+        const nameModal = document.getElementById('name-modal');
+        const playerNameInput = document.getElementById('player-name-input');
+        const confirmNameBtn = document.getElementById('confirm-name');
+        const cancelNameBtn = document.getElementById('cancel-name');
+        const nameError = document.getElementById('name-error');
+        
+        // Variáveis do quiz
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let selectedOption = null;
+        let timeLeft = 60;
+        let timerInterval;
+        let playerName = "";
+        
+        // Inicializar o quiz
+        startQuizBtn.addEventListener('click', showNameModal);
+        nextQuestionBtn.addEventListener('click', nextQuestion);
+        submitQuizBtn.addEventListener('click', finishQuiz);
+        restartQuizBtn.addEventListener('click', restartQuiz);
+        
+        // Eventos do modal de nome
+        confirmNameBtn.addEventListener('click', confirmName);
+        cancelNameBtn.addEventListener('click', cancelName);
+        playerNameInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                confirmName();
+            }
+        });
+        
+        // Sistema de abas
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                
+                // Atualizar abas ativas
+                tabs.forEach(t => t.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+                
+                // Se for a aba de ranking, atualizar os dados
+                if (tabId === 'ranking') {
+                    updateRanking();
+                }
+            });
+        });
+        
+        // Função para mostrar o modal de nome
+        function showNameModal() {
+            nameModal.style.display = 'flex';
+            playerNameInput.focus();
+            nameError.style.display = 'none';
+        }
+        
+        // Função para confirmar o nome
+        function confirmName() {
+            const name = playerNameInput.value.trim();
+            
+            if (name === "") {
+                nameError.style.display = 'block';
+                playerNameInput.focus();
+                return;
+            }
+            
+            playerName = name;
+            nameModal.style.display = 'none';
+            startQuiz();
+        }
+        
+        // Função para cancelar a inserção do nome
+        function cancelName() {
+            nameModal.style.display = 'none';
+            playerNameInput.value = '';
+        }
+        
+        // Função para iniciar o quiz
+        function startQuiz() {
+            welcomeScreen.style.display = 'none';
+            quizScreen.style.display = 'block';
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+            startTimer();
+        }
+        
+        // Função para carregar uma pergunta
+        function loadQuestion() {
+            const question = quizQuestions[currentQuestionIndex];
+            questionText.textContent = question.question;
+            
+            // Atualizar contador de perguntas
+            questionCounter.textContent = `Pergunta ${currentQuestionIndex + 1} de ${quizQuestions.length}`;
+            
+            // Atualizar barra de progresso
+            progressBar.style.width = `${((currentQuestionIndex + 1) / quizQuestions.length) * 100}%`;
+            
+            // Limpar opções anteriores
+            optionsContainer.innerHTML = '';
+            
+            // Adicionar novas opções
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.setAttribute('data-index', index);
+                
+                optionElement.addEventListener('click', () => {
+                    // Remover seleção anterior
+                    document.querySelectorAll('.option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    
+                    // Selecionar nova opção
+                    optionElement.classList.add('selected');
+                    selectedOption = index;
+                    
+                    // Mostrar botão de próxima pergunta
+                    if (currentQuestionIndex < quizQuestions.length - 1) {
+                        nextQuestionBtn.style.display = 'inline-block';
+                        submitQuizBtn.style.display = 'none';
+                    } else {
+                        nextQuestionBtn.style.display = 'none';
+                        submitQuizBtn.style.display = 'inline-block';
+                    }
+                });
+                
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // Resetar seleção
+            selectedOption = null;
+            nextQuestionBtn.style.display = 'none';
+            submitQuizBtn.style.display = 'none';
+            
+            // Reiniciar temporizador
+            resetTimer();
+        }
+        
+        // Função para avançar para a próxima pergunta
+        function nextQuestion() {
+            // Verificar resposta
+            if (selectedOption === quizQuestions[currentQuestionIndex].correct) {
+                score++;
+            }
+            
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+        
+        // Função para finalizar o quiz
+        function finishQuiz() {
+            // Verificar última resposta
+            if (selectedOption === quizQuestions[currentQuestionIndex].correct) {
+                score++;
+            }
+            
+            // Parar temporizador
+            clearInterval(timerInterval);
+            
+            // Mostrar tela de resultados
+            quizScreen.style.display = 'none';
+            resultsScreen.style.display = 'block';
+            
+            // Atualizar pontuação
+            finalScore.textContent = `${score}/${quizQuestions.length}`;
+            
+            // Mensagem personalizada baseada na pontuação
+            let message = "";
+            if (score === quizQuestions.length) {
+                message = "Incrível! Você é um verdadeiro especialista em Copa do Mundo!";
+            } else if (score >= quizQuestions.length * 0.7) {
+                message = "Muito bom! Você conhece bem a história das Copas!";
+            } else if (score >= quizQuestions.length * 0.5) {
+                message = "Bom trabalho! Você tem um conhecimento razoável sobre o tema.";
+            } else {
+                message = "Continue estudando! A Copa do Mundo tem muitas histórias interessantes!";
+            }
+            
+            resultMessage.textContent = message;
+            
+            // Salvar resultado no ranking
+            saveToRanking(playerName, score);
+        }
+        
+        // Função para reiniciar o quiz
+        function restartQuiz() {
+            resultsScreen.style.display = 'none';
+            welcomeScreen.style.display = 'block';
+        }
+        
+        // Função para iniciar o temporizador
+        function startTimer() {
+            resetTimer();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = `Tempo: ${timeLeft}s`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    // Se o tempo acabar, avançar automaticamente
+                    if (currentQuestionIndex < quizQuestions.length - 1) {
+                        nextQuestion();
+                    } else {
+                        finishQuiz();
+                    }
+                }
+            }, 1000);
+        }
+        
+        // Função para reiniciar o temporizador
+        function resetTimer() {
+            timeLeft = 60;
+            timerElement.textContent = `Tempo: ${timeLeft}s`;
+        }
+        
+        // Função para salvar no ranking
+        function saveToRanking(name, score) {
+            // Recuperar ranking existente ou criar um novo
+            let ranking = JSON.parse(localStorage.getItem('worldCupQuizRanking')) || [];
+            
+            // Adicionar novo resultado
+            ranking.push({
+                name: name,
+                score: score,
+                date: new Date().toLocaleDateString('pt-BR')
+            });
+            
+            // Ordenar por pontuação (maior primeiro)
+            ranking.sort((a, b) => b.score - a.score);
+            
+            // Manter apenas os 10 melhores resultados
+            if (ranking.length > 10) {
+                ranking = ranking.slice(0, 10);
+            }
+            
+            // Salvar no localStorage
+            localStorage.setItem('worldCupQuizRanking', JSON.stringify(ranking));
+        }
+        
+        // Função para atualizar a tabela de ranking
+        function updateRanking() {
+            // Recuperar ranking do localStorage
+            const ranking = JSON.parse(localStorage.getItem('worldCupQuizRanking')) || [];
+            
+            // Limpar tabela
+            rankingBody.innerHTML = '';
+            
+            // Adicionar entradas ao ranking
+            ranking.forEach((entry, index) => {
+                const row = document.createElement('tr');
+                
+                // Determinar classe de rank
+                let rankClass = '';
+                if (index === 0) rankClass = 'player-rank-1';
+                else if (index === 1) rankClass = 'player-rank-2';
+                else if (index === 2) rankClass = 'player-rank-3';
+                
+                row.innerHTML = `
+                    <td class="player-rank ${rankClass}">${index + 1}º</td>
+                    <td class="player-name">${entry.name}</td>
+                    <td class="player-score">${entry.score}/${quizQuestions.length}</td>
+                    <td>${entry.date}</td>
+                `;
+                
+                rankingBody.appendChild(row);
+            });
+            
+            // Se não houver entradas, mostrar mensagem
+            if (ranking.length === 0) {
+                rankingBody.innerHTML = `
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 2rem;">
+                            Nenhum resultado ainda. Seja o primeiro a completar o quiz!
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Inicializar a tabela de ranking
+        updateRanking();
+    </script>
+</body>
+</html>
