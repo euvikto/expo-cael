@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz da Copa do Mundo - Desafio do Futebol</title>
+    <link rel="stylesheet" href="style.css?v=4">
+</head>
+<body>
+    <header>
+        <h1>Quiz da <span>Copa do Mundo</span></h1>
+        <p class="subtitle">Teste seus conhecimentos sobre futebol</p>
+    </header>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" data-tab="quiz">Quiz</button>
+            <button class="tab" data-tab="ranking">Ranking</button>
+        </div>
+        
+        <div id="quiz-tab" class="tab-content active">
+            <div class="welcome-screen">
+                <h2>Bem-vindo ao Desafio da Copa do Mundo!</h2>
+                <p>Este quiz vai testar seus conhecimentos sobre a história das Copas do Mundo, grandes jogadores, momentos marcantes e curiosidades do maior evento do futebol mundial.</p>
+                <p>Serão 15 perguntas desafiadoras. Boa sorte!</p>
+                <button id="start-quiz" class="btn">Iniciar Quiz</button>
+            </div>
+            
+            <div class="quiz-screen" style="display: none;">
+                <h2>Desafio da Copa do Mundo</h2>
+                <div class="quiz-progress">
+                    <span id="question-counter">Pergunta 1 de 15</span>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <span id="timer">Tempo: 60s</span>
+                </div>
+                
+                <div class="question-container">
+                    <div class="question" id="question-text">Qual foi o primeiro país a sediar uma Copa do Mundo?</div>
+                    <div class="options" id="options-container"></div>
+                </div>
+                
+                <button id="next-question" class="btn" style="display: none;">Próxima Pergunta</button>
+                <button id="submit-quiz" class="btn" style="display: none;">Finalizar Quiz</button>
+            </div>
+            
+            <div class="results-screen" style="display: none;">
+                <h2>Resultado do Quiz</h2>
+                <div class="trophy">🏆</div>
+                <div class="score" id="final-score">0/15</div>
+                <p id="result-message">Parabéns! Você é um verdadeiro especialista em Copa do Mundo!</p>
+
+                <!-- NOVO BLOCO DE REVISÃO -->
+                <div id="answers-review" class="answers-review" style="margin-top: 2rem;"></div>
+
+                <button id="restart-quiz" class="btn">Jogar Novamente</button>
+            </div>
+        </div>
+        
+        <div id="ranking-tab" class="tab-content">
+            <div class="ranking-screen">
+                <h2>Ranking dos Jogadores</h2>
+                <p>Confira como você se compara a outros especialistas em Copa do Mundo!</p>
+
+                <div class="ranking-actions" style="margin-top:1rem; text-align:right;">
+                    <button id="clear-all" class="btn">🗑️ Limpar Todos</button>
+                </div>
+                
+                <table class="ranking-table">
+                    <thead>
+                        <tr>
+                            <th>Posição</th>
+                            <th>Jogador</th>
+                            <th>Pontuação</th>
+                            <th>Data</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ranking-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>Quiz da Copa do Mundo &copy; 2025 - Desafie seus conhecimentos sobre futebol</p>
+    </footer>
+    
+    <!-- Modal para nome -->
+    <div id="name-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Identifique-se para o Ranking</h3>
+            <p>Digite seu nome para aparecer no ranking de jogadores:</p>
+            <input type="text" id="player-name-input" class="name-input" placeholder="">
+            <div id="name-error" class="error-message">Por favor, digite um nome válido.</div>
+            <div class="modal-buttons">
+                <button id="confirm-name" class="modal-btn confirm">Confirmar</button>
+                <button id="cancel-name" class="modal-btn cancel">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js?v=4"></script>
+</body>
+</html>
